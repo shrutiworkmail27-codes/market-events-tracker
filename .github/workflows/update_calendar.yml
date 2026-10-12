@@ -1,0 +1,29 @@
+name: Auto Sync Corporate Calendar
+
+on:
+  schedule:
+    # 03:30 UTC & 12:30 UTC = 9:00 AM & 6:00 PM IST (Mon-Fri)
+    - cron: '30 3,12 * * 1-5'
+  workflow_dispatch:
+
+jobs:
+  sync-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install requests
+
+      - name: Run Calendar Sync
+        env:
+          APPS_SCRIPT_URL: ${{ secrets.APPS_SCRIPT_URL }}
+        run: |
+          python scripts/sync_calendar.py
